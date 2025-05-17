@@ -1,0 +1,145 @@
+package feedback;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class feedbackController {
+
+    // Connect DB
+    private static boolean isSuccess;
+    private static Connection con = null;
+    private static Statement stmt = null;
+    private static ResultSet rs = null;
+
+    // Feedback insert
+    public static boolean insertdata(String name, String email, String rating, String feedback) {
+        boolean isSuccess = false;
+        try {
+            // DB CONNECTION CALL
+            con = DBConnection.getConnection();
+            stmt = con.createStatement();
+            // SQL QUERY
+            String sql = "INSERT INTO feedback VALUES (0, '" + name + "', '" + email + "', '" + rating + "', '" + feedback + "')";
+            int rs = stmt.executeUpdate(sql);
+            if (rs > 0) {
+                isSuccess = true;
+            } else {
+                isSuccess = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isSuccess;
+    }
+
+    // GetById
+    public static List<feedbackModel> getById(String Id) {
+        int convertedID = Integer.parseInt(Id);
+
+        ArrayList<feedbackModel> Feedback = new ArrayList<>();
+
+        try {
+            // DB Connection
+            con = DBConnection.getConnection();
+            stmt = con.createStatement();
+
+            // Query
+            String sql = "SELECT * FROM feedback WHERE id = '" + convertedID + "'";
+
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String email = rs.getString(3);
+                String rating = rs.getString(4);
+                String feedback = rs.getString(5);
+
+                feedbackModel Fb = new feedbackModel(id, name, email, rating, feedback);
+                Feedback.add(Fb);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Feedback;
+    }
+
+    // GetAll Data
+    public static List<feedbackModel> getAllfeedback() {
+        ArrayList<feedbackModel> Feedbacks = new ArrayList<>();
+        try {
+            // DB Connection
+            con = DBConnection.getConnection();
+            stmt = con.createStatement();
+
+            // Query
+            String sql = "SELECT * FROM feedback";
+
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String email = rs.getString(3);
+                String rating = rs.getString(4);
+                String feedback = rs.getString(5);
+
+                feedbackModel Fb = new feedbackModel(id, name, email, rating, feedback);
+                Feedbacks.add(Fb);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Feedbacks;
+    }
+
+    // Update feedback Data
+    public static boolean updatedata(String id, String name, String email, String rating, String feedback) {
+        try {
+            // DB Connection
+            con = DBConnection.getConnection();
+            stmt = con.createStatement();
+
+            // SQL Query
+            String sql = "UPDATE feedback SET name='" + name + "', email='" + email + "', rating='" + rating + "', feedback='" + feedback + "' WHERE id='" + id + "'";
+
+            int rs = stmt.executeUpdate(sql);
+            if (rs > 0) {
+                isSuccess = true;
+            } else {
+                isSuccess = false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isSuccess;
+    }
+
+    // Delete feedback Data
+    public static boolean deletedata(String id) {
+        int convID = Integer.parseInt(id);
+        try {
+            // DB Connection
+            con = DBConnection.getConnection();
+            stmt = con.createStatement();
+            String sql = "DELETE FROM feedback WHERE id='" + convID + "'";
+            int rs = stmt.executeUpdate(sql);
+
+            if (rs > 0) {
+                isSuccess = true;
+            } else {
+                isSuccess = false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isSuccess;
+    }
+}
